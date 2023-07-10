@@ -32,10 +32,14 @@ app.post("/conta", (request,response) => {
 }) 
 
 /**Método para buscar o extrato de uma conta */
-app.get("/extrato_bancario/:cpf", (request,response) => {
-    const { cpf } = request.params;
+app.get("/extrato_bancario", (request,response) => {
+    const { cpf } = request.headers;
 
     const cliente = clientes.find(cliente => cliente.cpf === cpf);
+
+    if(!cliente) {
+        return response.status(400).json({error: "Cliente não encotrado"})
+    }
 
     return response.json(cliente.extrato);
 })
