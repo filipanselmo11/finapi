@@ -28,8 +28,16 @@ app.post("/conta", (request,response) => {
         id: uuidv4(),
         extrato:[]
     });
-    const messagem = 'Conta criada com sucesso!!'
     return response.status(201).json({message: "Conta criada com sucesso !!"})
 }) 
+
+/**Método para buscar o extrato de uma conta */
+app.get("/extrato_bancario/:cpf", (request,response) => {
+    const { cpf } = request.params;
+
+    const cliente = clientes.find(cliente => cliente.cpf === cpf);
+
+    return response.json(cliente.extrato);
+})
 
 app.listen(3333);
