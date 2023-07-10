@@ -18,10 +18,18 @@ const clientes = [];
 /**Método para criar conta */
 app.post("/conta", (request,response) => {
     const { cpf, nome } = request.body;
-    const id = uuidv4();
-    clientes.push({cpf, nome, id, extrato:[]});
+    const clienteJaExiste = clientes.some((cliente) => cliente.cpf === cpf) //Validando o cpf, é verificado se o cpf informado já existe na base de dados
+    if (clienteJaExiste) {
+        return response.status(400).json({error: "Já existe um cliente com esse CPF !!"})
+    }
+    clientes.push({
+        cpf,
+        nome,
+        id: uuidv4(),
+        extrato:[]
+    });
     const messagem = 'Conta criada com sucesso!!'
-    return response.status(201).send(messagem)
+    return response.status(201).json({message: "Conta criada com sucesso !!"})
 }) 
 
 app.listen(3333);
