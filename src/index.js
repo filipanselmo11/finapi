@@ -15,6 +15,21 @@ const clientes = [];
  * extrato - array
  */
 
+// MiddleWare
+
+const verificarSeCpfExiste = (request, response, next) => {
+    const { cpf } = request.headers;
+
+    const cliente = clientes.find(cliente => cliente.cpf === cpf);
+
+    if(!cliente) {
+        return response.status(400).json({error: "Cliente não encotrado"})
+    }
+    request.cliente = cliente;
+
+    return next();
+}
+
 /**Método para criar conta */
 app.post("/conta", (request,response) => {
     const { cpf, nome } = request.body;
@@ -31,16 +46,11 @@ app.post("/conta", (request,response) => {
     return response.status(201).json({message: "Conta criada com sucesso !!"})
 }) 
 
+//app.use(verificarSeCpfExiste) => forma alternativa de usar middleware
 /**Método para buscar o extrato de uma conta */
-app.get("/extrato_bancario", (request,response) => {
-    const { cpf } = request.headers;
-
-    const cliente = clientes.find(cliente => cliente.cpf === cpf);
-
-    if(!cliente) {
-        return response.status(400).json({error: "Cliente não encotrado"})
-    }
-
+app.get("/extrato_bancario", verificarSeCpfExiste, (request,response) => {
+    const { cliente } = request;
+    
     return response.json(cliente.extrato);
 })
 
